@@ -8,6 +8,12 @@ class Stack:
     def remove_cargo(self):
         self.cargo.pop()
     
+    def add_cargos(self, cargos):
+        self.cargo.extend(cargos)
+    
+    def remove_cargos(self, number):
+        self.cargo = self.cargo[:int(0-number)]
+    
 
 class Crane:
     def __init__(self, list):
@@ -27,6 +33,8 @@ class Crane:
     
     def move_new(self, string):
         step = string.split(" ")
+        self.stack[int(step[5].strip())-1].add_cargos(self.stack[int(step[3].strip())-1].cargo[int(0-int(step[1].strip())):])
+        self.stack[int(step[3].strip())-1].remove_cargos(int(step[1].strip()))
 
 
 
@@ -48,8 +56,5 @@ with open('day5.txt') as f:
     lines = f.readlines()
 
 for line in lines:
-    crane.move(line.strip())
+    crane.move_new(line.strip())
 crane.print_final()
-
-
-
