@@ -12,7 +12,8 @@ class Directory:
         return self.upper
     
     def add_lower(self, lower):
-        self.lower.append(lower)
+        if not lower in self.lower:
+            self.lower.append(lower)
     
     def get_lower(self, name):
         for l in self.lower:
@@ -37,7 +38,7 @@ class Directory:
 class File:
     def __init__(self, name, size):
         self.name = name
-        self.size = size
+        self.size = int(size)
     
 
 
@@ -60,17 +61,30 @@ class Command:
         else:
             return False
     
-    def cd(self, list):
-        for d in list:
-            if str(d.name) == str(self.commands[2]):
+    def cd(self, list, cur: Directory):
+        if str(self.commands[2]) in [d.name for d in list]:
+            for d in list:
+                if str(d.name) == str(self.commands[2]):
+                    return d
+        else:
+            if isinstance(cur, Directory):
+                d = Directory(str(self.commands[2]))
+                d.set_upper(cur)
+                list.append(d)
                 return d
+            else:
+                d = Directory(str(self.commands[2]))
+                list.append(d)
+                return d
+
+   
     
     def is_upper(self):
-        if self.commands[1] == "..":
+        if self.commands[2] == "..":
             return True
         else:
             return False
-    def get_upper(self, cur):
+    def get_upper(self, cur: Directory):
         return cur.get_upper()
         
     
@@ -80,11 +94,16 @@ class Command:
         else:
             return False
 
-    def get_dir(self):
-        return Directory(self.commands[1])
+    def get_dir(self, list, cur: Directory):
+        if str(self.commands[1]) not in [d.name for d in list]:
+            d = Directory(self.commands[1])
+            d.set_upper(cur)
+            cur.add_lower(d)
     
-    def get_file(self):
-        return File(self.commands[1], self.commands[0])
+    def get_file(self, list, cur: Directory):
+        if str(self.commands[1]) not in [f.name for f in list]:
+            f = File(self.commands[1], self.commands[0])
+            cur.add_file(f)
 
 
 
@@ -93,11 +112,28 @@ with open('day7.txt') as f:
     lines = f.readlines()
 
 directories = []
+files = []
 cur = ""
 for line in lines:
     command = Command(line)
     if command.is_command():
         if command.is_cd():
-            command.cd(directories)
-    if
+            if command.is_upper():
+                cur = command.get_upper(cur)
+            else:
+                cur = command.cd(directories, cur)
+    else:
+        if command.is_dir():
+            command.get_dir(directories, cur)
+        else: 
+            command.get_file(files, cur)
+
+total = 0
+for d in directories:
+    if int(d.get_total()) <= 100000:
+        total += int(d.get_total())
+print(total)
+
+for d in directories[:5]:
+    print(d.name, d.lower, d.upper, d.files, d.get_total())
 
