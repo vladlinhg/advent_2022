@@ -17,6 +17,11 @@ class Assignment:
                 if i not in self.s2: 
                     return False 
             return True
+    def is_overlap(self):
+        for i in self.s1:
+            if i in self.s2:
+                return True
+        return False
 
 with open('day4.txt') as f:
     lines = f.readlines()
@@ -24,6 +29,6 @@ with open('day4.txt') as f:
 total = 0
 for line in lines:
     assignment = Assignment(line)
-    if assignment.is_contain():
+    if assignment.is_overlap():
         total += 1
 print(total)
