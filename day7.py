@@ -26,15 +26,15 @@ class Directory:
     def get_files(self):
         return self.files
     
-    def get_total(self):
-        total = 0
-        for f in self.files:
-            total += f.size
-        if len(self.lower) >= 1:
-            for l in self.lower:
-                total += l.get_total()
-        return total
+def get_total(directory, total):
+    total_size = int(total)
+    for items in directory.files:
+        total_size += items.size
+    for item in directory.lower:
+        total_size += get_total(item, total_size)
+    return total_size
 
+    
 class File:
     def __init__(self, name, size):
         self.name = name
@@ -130,10 +130,13 @@ for line in lines:
 
 total = 0
 for d in directories:
-    if int(d.get_total()) <= 100000:
-        total += int(d.get_total())
+    res = get_total(d, 0)
+    if res <= 100000:
+        total += int(res)
+
 print(total)
 
 for d in directories[:5]:
-    print(d.name, d.lower, d.upper, d.files, d.get_total())
+    print(d.name, d.upper, d.lower, d.files, get_total(d, 0))
+
 
