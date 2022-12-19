@@ -11,12 +11,13 @@ class Item:
         else:
             self.worry += int(instruction[1])
 
+    def bored(self):
+        self.worry = self.worry//int(3)
+    
     def worry_test(self, instruction):
-        self.worry /= 3
-        if self.worry % instruction == 0:
+        if int(self.worry) % int(instruction) == 0:
             return True
-        else:
-            return False 
+        return False 
     def __str__(self) -> str:
         return str(self.worry)
 
@@ -54,10 +55,16 @@ class Monkey:
     def pass_item(self, item, monkey):
         monkey.items.append(item)
         self.items.remove(item)
+    def print_items(self):
+        for i in self.items:
+            print(i, end=" ")
+        print("")
     
     def play_item(self):
         for i in self.items:
+            self.insp += 1
             i.worry_change(self.op)
+            #print(i)
     
     def test_item(self, monkeys):
         for monkey in monkeys:
@@ -65,12 +72,23 @@ class Monkey:
                 pas = monkey
             if monkey.id == self.fai:
                 fai = monkey
-        for i in self.items:
+        #print(pas)
+        #print(fai)
+        #self.print_items()
+        items = [i for i in self.items]
+
+        for i in items:
+            #i.bored()
+
+            #print(i)
+        
             if i.worry_test(self.test):
                 self.pass_item(i, pas)
             else:
                 self.pass_item(i, fai)
-            self.insp += 1
+        
+        #print("all items processed")
+        
     
     def process(self, monkeys):
         self.play_item()
@@ -78,12 +96,15 @@ class Monkey:
     
     def print(self):
         print(self.id)
-        print(self.items)
+        self.print_items() 
         print(self.op)
         print(self.test)
         print(self.pas)
         print(self.fai)
         print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    
+    def __str__(self) -> str:
+        return str(self.id)
 
         
 
@@ -108,12 +129,13 @@ for i in instructions:
     monkey = Monkey(i)
     monkeys.append(monkey)
 
-for i in monkeys:
-    i.print()
-
-for i in range(20):
+for i in range(1000):
     for monkey in monkeys:
         monkey.process(monkeys)
+"""
+for i in monkeys:
+    i.print()
+"""
 
 log = []
 
